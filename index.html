@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yohan | Realtime Auction Problem Solving Portfolio</title>
+    <meta name="description" content="Realtime auction troubleshooting portfolio with code-backed problem/cause/solution/result cards">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="script.js"></script>
+</head>
+
+<body>
+    <div class="grid-overlay" aria-hidden="true"></div>
+
+    <header class="status-bar">
+        <div class="logo-area">
+            <div class="status-indicator online"></div>
+            <span id="system-name" class="system-name">YOHAN_SYSTEM_V.3.2</span>
+        </div>
+
+        <nav id="header-nav" class="nav-links" aria-label="Primary navigation"></nav>
+
+        <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-controls="header-nav"
+            aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <div class="time-display">
+            UPTIME: <span id="uptime">00:00:00</span>
+        </div>
+    </header>
+
+    <main class="dashboard-grid">
+        <section id="system-architecture" class="panel hero-panel">
+            <div class="panel-header">
+                <span id="hero-panel-title" class="panel-title">SYSTEM_ARCHITECTURE</span>
+                <span id="hero-panel-uid" class="panel-uid">ID: LIFE-NAV-01</span>
+            </div>
+
+            <div class="graph-container">
+                <div id="hero-mermaid" class="mermaid" data-mermaid-id="architecture"></div>
+            </div>
+
+            <div id="hero-metrics" class="hero-message"></div>
+        </section>
+
+        <div id="service-sections"></div>
+
+        <div id="top-panels" class="top-panels"></div>
+
+        <section id="skill-set" class="panel skills-panel">
+            <div class="panel-header">
+                <span id="skills-panel-title" class="panel-title">SKILL_SET</span>
+                <span id="skills-panel-uid" class="panel-uid">ID: SKILL-SET</span>
+            </div>
+            <div id="skill-grid" class="skill-grid"></div>
+        </section>
+
+        <section id="contact" class="panel contact-panel">
+            <div class="panel-header">
+                <span id="contact-panel-title" class="panel-title">CONTACT</span>
+                <span id="contact-panel-uid" class="panel-uid">ID: COMMS-01</span>
+            </div>
+            <div class="contact-content">
+                <p id="contact-description">Submit transmission to initiate collaboration.</p>
+                <div id="contact-actions" class="contact-actions"></div>
+            </div>
+        </section>
+    </main>
+
+    <div id="mermaid-modal" class="mermaid-modal" aria-hidden="true">
+        <div class="mermaid-modal-backdrop" data-mermaid-close></div>
+        <div class="mermaid-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="mermaid-modal-title">
+            <button class="mermaid-modal-close" type="button" data-mermaid-close>CLOSE</button>
+            <div id="mermaid-modal-title" class="mermaid-modal-header">Mermaid Diagram</div>
+            <div id="mermaid-modal-content" class="mermaid-modal-content"></div>
+        </div>
+    </div>
+</body>
+
+</html>
