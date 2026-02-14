@@ -720,6 +720,46 @@ body.modal-open {
     cursor: pointer;
 }
 
+.mermaid-modal-controls {
+    position: absolute;
+    top: 3.05rem;
+    left: 0.65rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    z-index: 2;
+}
+
+.mermaid-zoom-btn {
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.2);
+    color: var(--text-secondary);
+    font-family: var(--font-code);
+    font-size: 0.72rem;
+    line-height: 1;
+    min-width: 32px;
+    padding: 0.28rem 0.42rem;
+    cursor: pointer;
+}
+
+.mermaid-zoom-btn:hover {
+    color: var(--accent-blue);
+    border-color: var(--accent-blue);
+}
+
+.mermaid-zoom-value {
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 0.25rem 0.42rem;
+    color: var(--text-secondary);
+    font-family: var(--font-code);
+    font-size: 0.7rem;
+    min-width: 54px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.2);
+}
+
 .mermaid-modal-close:hover {
     color: var(--accent-blue);
     border-color: var(--accent-blue);
@@ -737,16 +777,29 @@ body.modal-open {
     flex: 1;
     overflow: auto;
     background: rgba(0, 0, 0, 0.18);
-    padding: 1rem;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
+    padding: 3rem 1rem 1rem;
+    display: block;
 }
 
-.mermaid-modal-content svg {
+.mermaid-modal-canvas {
+    width: max-content;
+    height: max-content;
+    margin: 0 auto;
+}
+
+.mermaid-modal-canvas svg {
+    display: block;
     max-width: none;
-    min-width: 760px;
-    height: auto;
+    min-width: 0;
+}
+
+.mermaid-modal-content.can-pan {
+    cursor: grab;
+    user-select: none;
+}
+
+.mermaid-modal-content.is-panning {
+    cursor: grabbing;
 }
 
 @media (max-width: 1200px) {
@@ -900,7 +953,25 @@ body.modal-open {
         height: 92vh;
     }
 
-    .mermaid-modal-content svg {
-        min-width: 480px;
+    .mermaid-modal-canvas svg {
+        min-width: 0;
+    }
+
+    .mermaid-modal-controls {
+        top: 2.75rem;
+        left: 0.45rem;
+        gap: 0.22rem;
+    }
+
+    .mermaid-zoom-btn {
+        min-width: 28px;
+        padding: 0.24rem 0.34rem;
+        font-size: 0.68rem;
+    }
+
+    .mermaid-zoom-value {
+        min-width: 48px;
+        font-size: 0.66rem;
+        padding: 0.22rem 0.35rem;
     }
 }
