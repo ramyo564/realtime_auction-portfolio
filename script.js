@@ -368,6 +368,19 @@ function createCardLinks(card) {
             link.target = '_blank';
             link.rel = 'noopener noreferrer';
         }
+
+        // GA4 Event Tracking
+        link.addEventListener('click', () => {
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({
+                event: 'select_content',
+                content_type: 'case_link',
+                item_id: card.title || 'unknown_case',
+                link_label: item.label,
+                link_url: item.href
+            });
+        });
+
         wrapper.appendChild(link);
     });
 
