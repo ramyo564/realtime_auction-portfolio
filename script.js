@@ -1,3 +1,169 @@
+
+const analyticsSession = {
+    id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`,
+    pageStartedAt: Date.now(),
+    visibleStartedAt: document.visibilityState === 'hidden' ? 0 : Date.now(),
+    visibleDurationMs: 0,
+    maxScrollPercent: 0,
+    ended: false,
+    currentSectionId: 'portfolio_page'
+};
+
+function pushDataLayerEvent(payload) {
+    if (!payload || typeof payload !== 'object') return;
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push(payload);
+}
+
+function trackSelectContent({
+    contentType,
+    itemId,
+    itemName,
+    sectionName,
+    interactionAction = 'click',
+    elementType,
+    elementLabel,
+    linkUrl,
+    linkType,
+    modalName,
+    value,
+    ...extra
+}) {
+    const payload = {
+        event: 'select_content',
+        session_id: analyticsSession.id,
+        content_type: contentType || 'unknown',
+        item_id: itemId || 'unknown',
+        section_name: sectionName || 'unknown',
+        interaction_action: interactionAction
+    };
+
+    if (itemName) payload.item_name = itemName;
+    if (elementType) payload.element_type = elementType;
+    if (elementLabel) payload.element_label = elementLabel;
+    if (linkUrl) payload.link_url = linkUrl;
+    if (linkType) payload.link_type = linkType;
+    if (modalName) payload.modal_name = modalName;
+    if (typeof value === 'number' && Number.isFinite(value) && value !== Infinity && value !== -Infinity) payload.value = value;
+
+    Object.entries(extra).forEach(([key, val]) => {
+        if (val !== undefined && val !== null && val !== '') {
+            payload[key] = val;
+        }
+    });
+
+    pushDataLayerEvent(payload);
+}
+
+function readScrollPercent() {
+    const documentElement = document.documentElement;
+    const maxScrollable = Math.max(0, documentElement.scrollHeight - window.innerHeight);
+    if (maxScrollable <= 0) return 100;
+    const ratio = (window.scrollY / maxScrollable) * 100;
+    return Math.max(0, Math.min(100, Math.round(ratio)));
+}
+
+function updateMaxScrollPercent() {
+    analyticsSession.maxScrollPercent = Math.max(analyticsSession.maxScrollPercent, readScrollPercent());
+}
+
+function stopVisibleTimer(timestamp = Date.now()) {
+    if (!analyticsSession.visibleStartedAt) return;
+    analyticsSession.visibleDurationMs += Math.max(0, timestamp - analyticsSession.visibleStartedAt);
+    analyticsSession.visibleStartedAt = 0;
+}
+
+function startVisibleTimer(timestamp = Date.now()) {
+    if (document.visibilityState === 'hidden' || analyticsSession.visibleStartedAt) return;
+    analyticsSession.visibleStartedAt = timestamp;
+}
+
+function endAnalyticsSession(reason = 'pagehide') {
+    if (analyticsSession.ended) return;
+    analyticsSession.ended = true;
+
+    updateMaxScrollPercent();
+    stopVisibleTimer();
+
+    const totalDurationMs = Math.max(0, Date.now() - analyticsSession.pageStartedAt);
+    const visibleDurationMs = Math.min(totalDurationMs, analyticsSession.visibleDurationMs);
+    const hiddenDurationMs = Math.max(0, totalDurationMs - visibleDurationMs);
+
+    trackSelectContent({
+        contentType: 'page_engagement',
+        itemId: 'portfolio_page',
+        itemName: document.title || 'Portfolio',
+        sectionName: 'lifecycle',
+        interactionAction: 'end',
+        elementType: 'page',
+        elementLabel: 'PAGE_END',
+        duration_ms: totalDurationMs,
+        engagement_time_msec: visibleDurationMs,
+        hidden_duration_ms: hiddenDurationMs,
+        max_scroll_percent: analyticsSession.maxScrollPercent,
+        page_type: 'portfolio',
+        end_reason: reason,
+        value: Math.round(visibleDurationMs / 1000)
+    });
+}
+
+function setupAnalyticsLifecycle() {
+    updateMaxScrollPercent();
+
+    trackSelectContent({
+        contentType: 'page_engagement',
+        itemId: 'portfolio_page',
+        itemName: document.title || 'Portfolio',
+        sectionName: 'lifecycle',
+        interactionAction: 'start',
+        elementType: 'page',
+        elementLabel: 'PAGE_START',
+        page_type: 'portfolio'
+    });
+
+    window.addEventListener('scroll', updateMaxScrollPercent, { passive: true });
+
+    document.addEventListener('visibilitychange', () => {
+        if (analyticsSession.ended) return;
+
+        if (document.visibilityState === 'hidden') {
+            stopVisibleTimer();
+            trackSelectContent({
+                contentType: 'page_visibility',
+                itemId: 'portfolio_page',
+                itemName: document.title || 'Portfolio',
+                sectionName: 'lifecycle',
+                interactionAction: 'hidden',
+                elementType: 'page',
+                elementLabel: 'PAGE_HIDDEN',
+                page_type: 'portfolio'
+            });
+            return;
+        }
+
+        startVisibleTimer();
+        trackSelectContent({
+            contentType: 'page_visibility',
+            itemId: 'portfolio_page',
+            itemName: document.title || 'Portfolio',
+            sectionName: 'lifecycle',
+            interactionAction: 'visible',
+            elementType: 'page',
+            elementLabel: 'PAGE_VISIBLE',
+            page_type: 'portfolio'
+        });
+    });
+
+    window.addEventListener('pagehide', () => endAnalyticsSession('pagehide'));
+    window.addEventListener('beforeunload', () => endAnalyticsSession('beforeunload'));
+}
+
+// Ensure lifecycle is initialized
+document.addEventListener('DOMContentLoaded', () => {
+    setupAnalyticsLifecycle();
+});
+
+
 import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
 import { templateConfig } from './config.js';
 
@@ -371,13 +537,16 @@ function createCardLinks(card) {
 
         // GA4 Event Tracking
         link.addEventListener('click', () => {
-            window.dataLayer = window.dataLayer || [];
-            window.dataLayer.push({
-                event: 'select_content',
-                content_type: 'case_link',
-                item_id: card.title || 'unknown_case',
-                link_label: item.label,
-                link_url: item.href
+            trackSelectContent({
+                contentType: 'case_link',
+                itemId: card.title || 'unknown_case',
+                itemName: card.title || 'Case',
+                sectionName: 'cases',
+                interactionAction: 'click',
+                elementType: 'link',
+                elementLabel: item.label,
+                linkUrl: item.href,
+                linkType: 'external'
             });
         });
 
