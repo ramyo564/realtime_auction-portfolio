@@ -31,7 +31,11 @@ function trackSelectContent({
 }) {
     const payload = {
         event: 'select_content',
+        tracking_version: '2026-03-ga4-unified-v1',
         session_id: analyticsSession.id,
+        page_path: window.location.pathname,
+        page_title: document.title,
+        page_type: 'portfolio',
         content_type: contentType || 'unknown',
         item_id: itemId || 'unknown',
         section_name: sectionName || 'unknown',
