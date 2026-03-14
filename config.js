@@ -62,6 +62,58 @@ export const templateConfig = {
             id: 'realtime-auction-cases',
             title: 'REALTIME_AUCTION_TROUBLESHOOTING_CASES',
             navLabel: 'CASES',
+            sectionLead: '대표 3건을 먼저 보고, 필요할 때 전체 Case 1~5를 확장해 깊게 읽을 수 있도록 구성했습니다.',
+            recruiterBrief: {
+                kicker: 'RECRUITER_QUICK_BRIEF',
+                title: '1분 요약으로 먼저 보는 핵심 변화',
+                cases: [
+                    {
+                        id: 'Case 1',
+                        anchorId: 'realtime-auction-case-1',
+                        title: '실시간 입찰 동시성 가드',
+                        problem: '동시 입찰 환경에서 최고가/낙찰자 갱신 충돌 리스크',
+                        action: '입찰 저장과 최고가 갱신 경로 분리 및 브로드캐스트 조건 제어',
+                        impact: '최고가 갱신 정합성 확보 및 실시간 클라이언트 상태 동기화 안정화'
+                    },
+                    {
+                        id: 'Case 2',
+                        anchorId: 'realtime-auction-case-2',
+                        title: '카카오페이 결제 상태 브릿지',
+                        problem: '프론트 제약 환경에서 ready/approval 상태 연결 단절',
+                        action: '사용자 키 기반 상태 매핑 및 결제 만료 주기적 정리',
+                        impact: '결제 진행 경로 연결 보장 및 미결제 데이터 누적 완화'
+                    },
+                    {
+                        id: 'Case 3',
+                        anchorId: 'realtime-auction-case-3',
+                        title: '조회 필터 및 카테고리 표준화',
+                        problem: '검색 조건 증가와 다단계 카테고리로 인한 기능 복잡도 상승',
+                        action: 'django-filter 중심 통일 및 MPTT 계층형 카테고리 모델 적용',
+                        impact: '검색 엔드포인트 단일화 및 계층 조회 운영 효율성 증대'
+                    },
+                    {
+                        id: 'Case 4',
+                        anchorId: 'realtime-auction-case-4',
+                        title: '라이프사이클 자동화 (Beat)',
+                        problem: '경매/결제/채팅 상태 수동 관리로 인한 타이밍 지연 및 누락 발생',
+                        action: 'Celery Beat 주기 작업과 상태 전이 Task 체인 구성',
+                        impact: '경매 종료부터 거래 채팅 준비까지 풀 자동화 달성'
+                    },
+                    {
+                        id: 'Case 5',
+                        anchorId: 'realtime-auction-case-5',
+                        title: 'WebSocket JWT 보안 강화',
+                        problem: 'HTTP와 분리된 실시간 연결 채널의 비인증 접근 리스크',
+                        action: 'ASGI 라우팅에 JWT 인증 미들웨어 래핑 및 scope 파싱 적용',
+                        impact: '실시간 채널 접속 권한 보호 및 비정상 요청 사전 차단'
+                    }
+                ]
+            },
+            featuredCaseAnchors: ['realtime-auction-case-1', 'realtime-auction-case-2', 'realtime-auction-case-4'],
+            featuredCaseCount: 3,
+            featuredStateLabel: '대표 3건 우선 노출',
+            featuredToggleLabel: '전체 Case 1~5 보기',
+            featuredCollapseLabel: '대표 Case 3건만 보기',
             theme: 'blue',
             cardVisualHeight: '280px',
             cardClass: 'problem-case-card',
@@ -76,6 +128,7 @@ export const templateConfig = {
                             title: 'Case 1. 실시간 입찰 동시성 정합성 가드',
                             subtitle: '2023-09 · AuctionConsumer 비동기 경계 정리',
                             overview: '동시 입찰 환경에서 최고가/낙찰자 갱신 충돌을 줄이기 위해\n입찰 저장과 최고가 갱신 경로를 분리한 케이스입니다.',
+                            businessImpact: '동시 입찰 정합성 보장으로 금전적 치명적 오류 차단 및 경매 플랫폼 신뢰성 직결',
                             role: '입찰 처리 흐름 설계, 최고가 업데이트 조건 정리, WebSocket 브로드캐스트 구조 정비',
                             stackSummary: 'Django Channels, database_sync_to_async, AuctionRoom, AuctionMessage',
                             problem: '1) 여러 사용자가 동시에 bid 이벤트를 전송하면 최고가 갱신 시점이 겹칠 수 있습니다.\n2) 메시지 저장과 최고가 반영이 분리되지 않으면 낮은 가격 업데이트가 섞일 위험이 있습니다.',
@@ -101,6 +154,7 @@ export const templateConfig = {
                             title: 'Case 2. 카카오페이 ready/approval 상태 브릿지 안정화',
                             subtitle: '2023-10 ~ 2023-11 · Payment Flow 구현',
                             overview: '프론트 세션/쿠키가 없는 제약 환경에서\nready -> approval 상태 연결과 미완료 결제 정리를 구현한 케이스입니다.',
+                            businessImpact: '결제 상태 브릿지 복구로 미결제 이탈 방지 및 실제 비즈니스 매출 손실 최소화',
                             role: 'KakaoPay ready/approval API 구현, 임시 상태 매핑, 결제 만료 정리 로직 구성',
                             stackSummary: 'DRF APIView, KakaoPay REST, Celery Task, Payments model',
                             problem: '1) 카카오페이는 ready 단계의 `tid`를 approval에서 다시 사용해야 합니다.\n2) 프론트 세션 경계가 없는 환경에서는 사용자 결제 상태를 안전하게 이어붙이기 어렵습니다.\n3) 미완료 결제가 누적되면 운영 데이터 품질이 떨어집니다.',
@@ -132,6 +186,7 @@ export const templateConfig = {
                             title: 'Case 3. 검색 필터 + MPTT 카테고리 구조 표준화',
                             subtitle: '2023-09 · Product 조회 경로 개선',
                             overview: '상품 탐색 API에서 키워드/카테고리 조합 검색을 표준화하고\n계층형 카테고리 모델을 적용한 케이스입니다.',
+                            businessImpact: '상품 탐색 UX 고도화로 카테고리별 체류 시간 증가 및 입찰 전환율 상승 기대',
                             role: '필터 설계, 카테고리 모델 리팩터링, 페이지네이션 응답 정리',
                             stackSummary: 'django-filter, CharFilter(icontains), django-mptt, PageNumberPagination',
                             problem: '1) 단순 조회 방식은 조건 조합이 늘수록 분기와 유지비가 커집니다.\n2) 다단계 카테고리를 일반 테이블로 다루면 상/하위 조회 로직이 복잡해집니다.',
@@ -157,6 +212,7 @@ export const templateConfig = {
                             title: 'Case 4. 경매-결제-채팅 라이프사이클 자동화',
                             subtitle: '2023-09 ~ 2023-11 · Celery Beat 운영 루프',
                             overview: '경매 시작/종료, 낙찰 후 결제 생성, 거래 채팅방 생성을\n주기 작업으로 연결한 운영 자동화 케이스입니다.',
+                            businessImpact: '경매 종료 후속 라이프사이클 100% 자동화로 수동 운영 리소스 원천 절감',
                             role: '주기 작업 설계, 상태 전이 연결, 후속 도메인 task 체인 구성',
                             stackSummary: 'Celery, Celery Beat, Auction task, Payment task, Chat task',
                             problem: '1) 경매방 생성/종료를 수동으로 관리하면 상태 누락이 발생할 수 있습니다.\n2) 낙찰 후 결제/채팅 준비가 지연되면 사용자 거래 경험이 단절됩니다.',
@@ -188,6 +244,7 @@ export const templateConfig = {
                             title: 'Case 5. WebSocket JWT 인증 경계 강화',
                             subtitle: '2023-09 · ASGI middleware 연동',
                             overview: '실시간 채널(auction/chat)에서 비인증 사용자의 접근을 줄이기 위해\nWebSocket 전용 JWT 미들웨어를 적용한 케이스입니다.',
+                            businessImpact: '실시간 연결 보안 강화로 악성 접근에 의한 리소스 고갈 및 권한 탈취 방어',
                             role: 'ASGI 라우팅 인증 경계 설정, scope 사용자 주입, consumer 접근 정책 정리',
                             stackSummary: 'ProtocolTypeRouter, WebSocketJWTAuthMiddleware, SimpleJWT AccessToken',
                             problem: '1) WebSocket 연결은 HTTP 인증 흐름과 분리되어 별도 인증 경계가 필요합니다.\n2) scope user가 보장되지 않으면 실시간 채널에서 비인증 접근 통제가 어렵습니다.',
